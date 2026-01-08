@@ -2,191 +2,90 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Molleiros Decor | Sistema de Locação</title>
-
+<title>Molleiros Decor | Sistema Inicial</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-body{
-  font-family:Segoe UI, Arial;
-  background:#fff7f9;
-  margin:0;
-}
-section{
-  background:#fff;
-  max-width:1100px;
-  margin:20px auto;
-  padding:20px;
-  border-radius:14px;
-}
+body{font-family:Segoe UI,Arial;background:#fff7fb;padding:20px}
+section{background:#fff;padding:20px;border-radius:16px;margin-bottom:20px;box-shadow:0 0 10px rgba(0,0,0,.05)}
 h2{color:#c64f86}
-input{padding:8px;width:100%;margin-top:6px}
-button{
-  background:#f3a6c8;
-  border:none;
-  padding:10px 16px;
-  border-radius:8px;
-  margin-top:10px;
-  cursor:pointer;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-}
-th,td{
-  border:1px solid #eee;
-  padding:8px;
-}
-th{background:#ffe3ec}
-.total{
-  font-weight:bold;
-  font-size:18px;
-  margin-top:10px;
-}
-.hidden{display:none}
+label{display:block;margin-top:10px}
+input,button{padding:8px;width:100%;margin-top:4px}
+button{background:#f8c8dc;border:none;border-radius:8px;margin-top:12px;cursor:pointer}
+#contrato{background:linear-gradient(135deg,#ffe6f0,#fff8dc,#e8f7ff);padding:40px;border-radius:20px}
+.watermark{opacity:.08;position:absolute;font-size:120px}
 </style>
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<section id="loginBox">
-<h2>Login – Molleiros Decor</h2>
-<input id="email" placeholder="Email">
-<input id="senha" type="password" placeholder="Senha">
-<button id="btnLogin">Entrar</button>
-</section>
-
-<!-- SISTEMA -->
-<div id="sistema" class="hidden">
-
-<!-- DADOS DA EMPRESA -->
 <section>
-<h2>Dados da Empresa</h2>
-<p><b>Molleiros Decor</b><br>
-Decoração Infantil – Pegue e Monte<br>
-Carapicuíba / SP</p>
+<h2>👤 Cadastro de Cliente</h2>
+<label>Nome</label><input id="cNome">
+<label>CPF</label><input id="cCpf">
+<label>Telefone</label><input id="cTel">
+<label>Endereço</label><input id="cEnd">
+<button onclick="salvarCliente()">Salvar Cliente</button>
 </section>
 
-<!-- CLIENTE -->
 <section>
-<h2>Cliente</h2>
-<input id="nome" placeholder="Nome">
-<input id="cpf" placeholder="CPF">
-<input id="telefone" placeholder="Telefone">
-<input id="endereco" placeholder="Endereço">
+<h2>📦 Estoque</h2>
+<label>Item</label><input id="eItem">
+<label>Quantidade</label><input type="number" id="eQtd">
+<button onclick="salvarEstoque()">Adicionar</button>
+<div id="listaEstoque"></div>
 </section>
 
-<!-- VALORES -->
 <section>
-<h2>Valores da Locação</h2>
-<input id="valorContrato" type="number" placeholder="Valor do contrato">
-<input id="sinal" type="number" placeholder="Sinal pago">
-<div class="total" id="valorReceber">Valor a receber: R$ 0,00</div>
+<h2>🧾 Contrato</h2>
+<label>Valor do Contrato</label><input type="number" id="valorContrato">
+<label>Sinal</label><input type="number" id="sinal">
+<button onclick="gerarContrato()">Gerar Contrato</button>
 </section>
 
-<!-- ITENS -->
-<section>
-<h2>Itens Locados (valores para avaria/extravio)</h2>
-<input id="item" placeholder="Item">
-<input id="qtd" type="number" placeholder="Qtd">
-<input id="valor" type="number" placeholder="Valor do item">
-<button onclick="addItem()">Adicionar</button>
-
-<table id="tabelaItens">
-<tr><th>Item</th><th>Qtd</th><th>Valor</th><th>Checklist</th></tr>
-</table>
+<section id="contrato" style="display:none">
+<h2 style="text-align:center">CONTRATO DE LOCAÇÃO – PEGUE E MONTE</h2>
+<p><strong>Empresa:</strong> Molleiros Decor</p>
+<p><strong>Cliente:</strong> <span id="pCliente"></span></p>
+<p><strong>Endereço:</strong> <span id="pEnd"></span></p>
+<p><strong>Valor:</strong> R$ <span id="pValor"></span></p>
+<p><strong>Sinal:</strong> R$ <span id="pSinal"></span></p>
+<h3>Cláusula de Cancelamento</h3>
+<p>Em caso de cancelamento com menos de 7 dias do evento, o sinal não será devolvido.</p>
+<p><strong>Assinatura Digital:</strong> __________________________</p>
+<button onclick="window.print()">🖨️ Imprimir / PDF</button>
 </section>
-
-<!-- CONTRATO -->
-<section>
-<h2>Contrato</h2>
-<button onclick="gerarContrato()">Visualizar Contrato</button>
-<button onclick="window.print()">Imprimir</button>
-
-<pre id="contrato" style="white-space:pre-wrap;background:#fafafa;padding:15px;border-radius:10px"></pre>
-</section>
-
-</div>
 
 <script>
-/* SUPABASE */
-const client = window.supabase.createClient(
+const supabase = supabaseJs.createClient(
   'https://dpwtogyfwxoibtrrquax.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwd3RvZ3lmd3hvaWJ0cnJxdWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzMyOTUsImV4cCI6MjA4MzQwOTI5NX0.VkDX_uXY2qPFtnEqLFULjRUrN4dACJE86AcawIXZ-44'
 );
 
-/* LOGIN */
-btnLogin.addEventListener('click', async ()=>{
-  const { error } = await client.auth.signInWithPassword({
-    email: email.value,
-    password: senha.value
-  });
-  if(error){alert(error.message);return;}
-  loginBox.classList.add('hidden');
-  sistema.classList.remove('hidden');
-});
+let clienteAtual={};
 
-/* VALORES */
-valorContrato.oninput = calcular;
-sinal.oninput = calcular;
-
-function calcular(){
-  const receber =
-    (Number(valorContrato.value)||0) -
-    (Number(sinal.value)||0);
-  valorReceber.innerText =
-    `Valor a receber: R$ ${receber.toFixed(2)}`;
+async function salvarCliente(){
+ clienteAtual={nome:cNome.value,cpf:cCpf.value,tel:cTel.value,end:cEnd.value};
+ await supabase.from('clientes').insert(clienteAtual);
+ alert('Cliente salvo');
 }
 
-/* ITENS */
-let itens=[];
-function addItem(){
-  itens.push(item.value);
-  tabelaItens.innerHTML += `
-  <tr>
-    <td>${item.value}</td>
-    <td>${qtd.value}</td>
-    <td>R$ ${Number(valor.value).toFixed(2)}</td>
-    <td><input type="checkbox"></td>
-  </tr>`;
-  item.value=qtd.value=valor.value="";
+async function salvarEstoque(){
+ await supabase.from('estoque').insert({item:eItem.value,qtd:eQtd.value});
+ listarEstoque();
 }
 
-/* CONTRATO */
+async function listarEstoque(){
+ const {data}=await supabase.from('estoque').select('*');
+ listaEstoque.innerHTML=data.map(i=>`${i.item} (${i.qtd})`).join('<br>');
+}
+listarEstoque();
+
 function gerarContrato(){
-contrato.innerText = `
-CONTRATO DE LOCAÇÃO – PEGUE E MONTE
-
-LOCADORA:
-MOLLEIROS DECOR
-Decoração Infantil
-Carapicuíba / SP
-
-CLIENTE:
-${nome.value}
-CPF: ${cpf.value}
-Telefone: ${telefone.value}
-Endereço: ${endereco.value}
-
-VALOR DO CONTRATO:
-R$ ${Number(valorContrato.value).toFixed(2)}
-
-SINAL:
-R$ ${Number(sinal.value).toFixed(2)}
-
-ITENS LOCADOS:
-${itens.join(", ")}
-
-OBS:
-Os valores dos itens são apenas para casos de avaria ou extravio.
-
-ASSINATURAS:
-_____________________________________
-`;
+ pCliente.innerText=clienteAtual.nome;
+ pEnd.innerText=clienteAtual.end;
+ pValor.innerText=valorContrato.value;
+ pSinal.innerText=sinal.value;
+ contrato.style.display='block';
 }
 </script>
-
 </body>
 </html>
