@@ -78,18 +78,28 @@ th{background:var(--amarelo)}
 
 <section>
 <h2>💰 Valores</h2>
-<label>Valor do Contrato</label><input id="valorContrato" type="number" oninput="atualizar()">
-<label>Sinal</label><input id="sinal" type="number" oninput="atualizar()">
+<label>Valor do Contrato</label>
+<input id="valorContrato" type="number" oninput="atualizar()">
+
+<label>Sinal</label>
+<input id="sinal" type="number" oninput="atualizar()">
+
 <div class="total" id="valorReceber">Valor a Receber: R$ 0,00</div>
 </section>
 
 <section>
-<h2>📦 Itens do Kit (avaria/extravio)</h2>
-<label>Item</label><input id="item">
-<label>Valor de Reposição</label><input id="valorItem" type="number">
+<h2>📦 Itens do Kit (avaria / extravio)</h2>
+<label>Item</label>
+<input id="item">
+
+<label>Valor de Reposição</label>
+<input id="valorItem" type="number">
+
 <button onclick="addItem()">Adicionar Item</button>
 
-<table id="tItens"><tr><th>Item</th><th>Valor</th></tr></table>
+<table id="tItens">
+<tr><th>Item</th><th>Valor</th></tr>
+</table>
 
 <h3>✔ Checklist Retirada</h3>
 <div id="checkRet"></div>
@@ -115,47 +125,65 @@ th{background:var(--amarelo)}
 </div>
 
 <script>
-// SUPABASE CONFIG
+/* ================= SUPABASE ================= */
 const supabaseUrl = 'https://dpwtogyfwxoibtrrquax.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwd3RvZ3lmd3hvaWJ0cnJxdWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzMyOTUsImV4cCI6MjA4MzQwOTI5NX0.VkDX_uXY2qPFtnEqLFULjRUrN4dACJE86AcawIXZ-44';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// LOGIN
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+/* ================= LOGIN ================= */
 async function login(){
  const { error } = await supabase.auth.signInWithPassword({
   email: loginEmail.value,
   password: loginSenha.value
  });
- if(error){alert('Login inválido');return;}
+ if(error){
+  alert('Login inválido');
+  return;
+ }
  loginBox.style.display='none';
  sistema.style.display='block';
 }
 
-// SISTEMA
+/* ================= SISTEMA ================= */
 let itens=[];
 
 function addItem(){
- let i=item.value;
- let v=Number(valorItem.value||0);
- if(!i||v<=0)return;
- itens.push({i,v});
- tItens.innerHTML+=`<tr><td>${i}</td><td>R$ ${v.toFixed(2)}</td></tr>`;
- checkRet.innerHTML+=`<label><input type="checkbox"> ${i}</label><br>`;
- checkDev.innerHTML+=`<label><input type="checkbox"> ${i}</label><br>`;
- item.value='';valorItem.value='';
+ if(!item.value || !valorItem.value) return;
+
+ itens.push({
+  nome:item.value,
+  valor:Number(valorItem.value)
+ });
+
+ tItens.innerHTML+=`
+ <tr>
+  <td>${item.value}</td>
+  <td>R$ ${Number(valorItem.value).toFixed(2)}</td>
+ </tr>`;
+
+ checkRet.innerHTML+=`<label><input type="checkbox"> ${item.value}</label><br>`;
+ checkDev.innerHTML+=`<label><input type="checkbox"> ${item.value}</label><br>`;
+
+ item.value='';
+ valorItem.value='';
  gerarContrato();
 }
 
-function atualizar(){gerarContrato();}
+function atualizar(){
+ gerarContrato();
+}
 
 function gerarContrato(){
- let vc=Number(valorContrato.value||0);
- let s=Number(sinal.value||0);
- let receber=vc-s;
- valorReceber.innerText=`Valor a Receber: R$ ${receber.toFixed(2)}`;
+ const vc = Number(valorContrato.value||0);
+ const s  = Number(sinal.value||0);
+ const receber = vc - s;
 
- contratoConteudo.innerHTML=`
+ valorReceber.innerText = `Valor a Receber: R$ ${receber.toFixed(2)}`;
+
+ contratoConteudo.innerHTML = `
  <h1 style="text-align:center;color:#c64f86">CONTRATO DE LOCAÇÃO – PEGUE E MONTE</h1>
+
  <strong>LOCADORA:</strong><br>
  Molleiros Decor – Decoração Infantil<br><br>
 
@@ -169,22 +197,24 @@ function gerarContrato(){
  <strong>SINAL:</strong> R$ ${s.toFixed(2)}<br>
  <strong>VALOR A RECEBER:</strong> R$ ${receber.toFixed(2)}<br><br>
 
- <strong>ITENS LOCADOS:</strong><br>
- ${itens.map(x=>`• ${x.i} – R$ ${x.v.toFixed(2)}`).join('<br>')||'—'}<br><br>
+ <strong>ITENS LOCADOS (avaria/extravio):</strong><br>
+ ${itens.map(i=>`• ${i.nome} – R$ ${i.valor.toFixed(2)}`).join('<br>') || '—'}<br><br>
 
  <strong>OBSERVAÇÕES NA DEVOLUÇÃO:</strong><br>
- ${obsDev.value||'—'}
+ ${obsDev.value || '—'}
  `;
 }
 
 async function gerarPDF(){
  gerarContrato();
+
  await supabase.from('contratos').insert([{
   valor_contrato:Number(valorContrato.value),
   sinal:Number(sinal.value),
   valor_receber:Number(valorContrato.value)-Number(sinal.value),
   status:'ativo'
  }]);
+
  html2pdf().from(contratoPDF).save('Contrato_Molleiros_Decor.pdf');
 }
 </script>
