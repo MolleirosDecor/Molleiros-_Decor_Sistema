@@ -2,52 +2,80 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Molleiros Decor | Sistema Online Profissional</title>
+<title>Molleiros Decor | Sistema Profissional</title>
 
-<!-- SUPABASE -->
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <style>
-:root{
- --rosa:#f8c8dc;--rosa2:#f4b3cd;--amarelo:#fff1c1;--texto:#444;
+body{
+  font-family:Segoe UI,Arial,sans-serif;
+  background:#fff7fb;
+  margin:0;
+  color:#555;
 }
-body{font-family:'Segoe UI',Arial;background:#fff7fb;margin:0;color:var(--texto)}
-header{background:var(--rosa);padding:20px;text-align:center}
-header img{height:90px}
-section{background:#fff;max-width:1100px;margin:20px auto;padding:25px;border-radius:16px;box-shadow:0 0 14px rgba(0,0,0,.06)}
-h2{color:#c64f86;margin-top:0}
-label{display:block;margin-top:10px}
-input,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
-button{background:var(--rosa);border:none;padding:10px 18px;border-radius:10px;margin-top:15px;cursor:pointer}
-button:hover{background:var(--rosa2)}
-table{width:100%;border-collapse:collapse;margin-top:15px}
-th,td{border:1px solid #eee;padding:8px;text-align:center}
-th{background:var(--amarelo)}
-.total{font-size:20px;font-weight:bold;color:#c64f86;margin-top:15px}
 
 /* LOGIN */
 #loginBox{
- max-width:400px;margin:80px auto;padding:30px;background:#fff;
- border-radius:16px;box-shadow:0 0 12px rgba(0,0,0,.1)
+  max-width:400px;
+  margin:100px auto;
+  background:#fff;
+  padding:30px;
+  border-radius:18px;
+  box-shadow:0 0 15px rgba(0,0,0,.1);
 }
+#loginBox h2{color:#c64f86;text-align:center}
+label{display:block;margin-top:12px}
+input{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+button{
+  background:#f8c8dc;
+  border:none;
+  padding:12px;
+  border-radius:12px;
+  margin-top:15px;
+  cursor:pointer;
+  width:100%;
+}
+button:hover{background:#f4b3cd}
 
-/* CONTRATO */
-#contratoPDF{
- margin-top:40px;padding:50px;min-height:1100px;
- background:linear-gradient(135deg,#ffe6f0,#fff8dc,#e8f7ff);
- position:relative
+/* SISTEMA */
+header{
+  background:#f8c8dc;
+  padding:15px;
+  text-align:center;
 }
-.watermark{
- position:absolute;top:50%;left:50%;
- transform:translate(-50%,-50%);
- opacity:0.08
+section{
+  background:#fff;
+  max-width:1200px;
+  margin:20px auto;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 0 12px rgba(0,0,0,.06);
 }
-.watermark img{width:90%}
-.contrato{position:relative;z-index:1;font-size:14px;line-height:1.6}
-.valorDestaque{font-size:22px;font-weight:bold;color:#c64f86;margin:15px 0}
+h2{color:#c64f86}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+th,td{
+  border:1px solid #eee;
+  padding:8px;
+}
+th{background:#fff1c1}
+.total{
+  font-size:22px;
+  color:#c64f86;
+  font-weight:bold;
+  margin-top:15px;
+}
+.flex{display:flex;gap:12px;flex-wrap:wrap}
+.flex>div{flex:1}
 </style>
 </head>
 
@@ -55,167 +83,130 @@ th{background:var(--amarelo)}
 
 <!-- LOGIN -->
 <div id="loginBox">
-<h2 style="text-align:center;color:#c64f86">🔐 Login Molleiros Decor</h2>
-<label>Email</label>
-<input id="loginEmail" value="molleirosdecor@gmail.com">
-<label>Senha</label>
-<input id="loginSenha" type="password">
-<button style="width:100%" onclick="login()">Entrar</button>
+  <h2>🔐 Login Molleiros Decor</h2>
+
+  <label>Email</label>
+  <input id="loginEmail" type="email" value="molleirosdecor@gmail.com">
+
+  <label>Senha</label>
+  <input id="loginSenha" type="password">
+
+  <button onclick="login()">Entrar</button>
 </div>
 
 <!-- SISTEMA -->
 <div id="sistema" style="display:none">
 
-<header><img src="logo.png"></header>
+<header>
+  <h2>Molleiros Decor — Sistema de Locação</h2>
+</header>
 
 <section>
-<h2>👩‍👧 Cliente</h2>
-<label>Nome</label><input id="cNome">
-<label>CPF</label><input id="cCpf">
-<label>Telefone</label><input id="cTel">
-<label>Endereço</label><input id="cEnd">
+  <h2>👩 Cliente</h2>
+  <div class="flex">
+    <div><label>Nome</label><input id="nome"></div>
+    <div><label>CPF</label><input id="cpf"></div>
+    <div><label>Telefone</label><input id="telefone"></div>
+  </div>
+  <label>Endereço</label>
+  <input id="endereco">
 </section>
 
 <section>
-<h2>💰 Valores</h2>
-<label>Valor do Contrato</label>
-<input id="valorContrato" type="number" oninput="atualizar()">
+  <h2>📦 Itens Locados (Checklist)</h2>
+  <div class="flex">
+    <div><label>Item</label><input id="item"></div>
+    <div><label>Qtd</label><input type="number" id="qtd"></div>
+    <div><label>Valor (avaria/extravio)</label><input type="number" id="valor"></div>
+  </div>
+  <button onclick="addItem()">Adicionar Item</button>
 
-<label>Sinal</label>
-<input id="sinal" type="number" oninput="atualizar()">
-
-<div class="total" id="valorReceber">Valor a Receber: R$ 0,00</div>
+  <table id="tItens">
+    <tr><th>✔</th><th>Item</th><th>Qtd</th><th>Valor</th></tr>
+  </table>
 </section>
 
 <section>
-<h2>📦 Itens do Kit (avaria / extravio)</h2>
-<label>Item</label>
-<input id="item">
-
-<label>Valor de Reposição</label>
-<input id="valorItem" type="number">
-
-<button onclick="addItem()">Adicionar Item</button>
-
-<table id="tItens">
-<tr><th>Item</th><th>Valor</th></tr>
-</table>
-
-<h3>✔ Checklist Retirada</h3>
-<div id="checkRet"></div>
-
-<h3>✔ Checklist Devolução</h3>
-<div id="checkDev"></div>
-
-<label>Observações na Devolução</label>
-<textarea id="obsDev"></textarea>
+  <h2>💰 Valores</h2>
+  <div class="flex">
+    <div><label>Valor do Contrato</label><input type="number" id="valorContrato" oninput="recalcular()"></div>
+    <div><label>Sinal Recebido</label><input type="number" id="sinal" oninput="recalcular()"></div>
+  </div>
+  <div class="total" id="total">Valor a receber: R$ 0,00</div>
 </section>
 
 <section>
-<button onclick="gerarContrato()">Atualizar Contrato</button>
-<button onclick="gerarPDF()">Gerar PDF</button>
-<button onclick="window.print()">Imprimir</button>
-</section>
-
-<section id="contratoPDF">
-<div class="watermark"><img src="logo.png"></div>
-<div class="contrato" id="contratoConteudo"></div>
+  <button onclick="imprimir()">🖨️ Imprimir Contrato</button>
 </section>
 
 </div>
 
 <script>
-/* ================= SUPABASE ================= */
+// 🔗 SUPABASE (SUAS CHAVES)
 const supabaseUrl = 'https://dpwtogyfwxoibtrrquax.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwd3RvZ3lmd3hvaWJ0cnJxdWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzMyOTUsImV4cCI6MjA4MzQwOTI5NX0.VkDX_uXY2qPFtnEqLFULjRUrN4dACJE86AcawIXZ-44';
 
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-/* ================= LOGIN ================= */
+// 🔐 LOGIN
 async function login(){
- const { error } = await supabase.auth.signInWithPassword({
-  email: loginEmail.value,
-  password: loginSenha.value
- });
- if(error){
-  alert('Login inválido');
-  return;
- }
- loginBox.style.display='none';
- sistema.style.display='block';
+  const email = loginEmail.value;
+  const senha = loginSenha.value;
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: senha
+  });
+
+  if(error){
+    alert('Erro no login: ' + error.message);
+    return;
+  }
+
+  loginBox.style.display = 'none';
+  sistema.style.display = 'block';
 }
 
-/* ================= SISTEMA ================= */
+// 🔁 AUTO LOGIN
+supabase.auth.getSession().then(({ data })=>{
+  if(data.session){
+    loginBox.style.display='none';
+    sistema.style.display='block';
+  }
+});
+
+// 📦 ITENS
 let itens=[];
-
 function addItem(){
- if(!item.value || !valorItem.value) return;
+  itens.push({
+    item:item.value,
+    qtd:qtd.value,
+    valor:valor.value
+  });
 
- itens.push({
-  nome:item.value,
-  valor:Number(valorItem.value)
- });
+  tItens.innerHTML += `
+   <tr>
+     <td><input type="checkbox"></td>
+     <td>${item.value}</td>
+     <td>${qtd.value}</td>
+     <td>R$ ${Number(valor.value).toFixed(2)}</td>
+   </tr>
+  `;
 
- tItens.innerHTML+=`
- <tr>
-  <td>${item.value}</td>
-  <td>R$ ${Number(valorItem.value).toFixed(2)}</td>
- </tr>`;
-
- checkRet.innerHTML+=`<label><input type="checkbox"> ${item.value}</label><br>`;
- checkDev.innerHTML+=`<label><input type="checkbox"> ${item.value}</label><br>`;
-
- item.value='';
- valorItem.value='';
- gerarContrato();
+  item.value=qtd.value=valor.value='';
 }
 
-function atualizar(){
- gerarContrato();
+// 💰 VALORES
+function recalcular(){
+  let v = Number(valorContrato.value)||0;
+  let s = Number(sinal.value)||0;
+  let receber = v - s;
+  total.innerText = 'Valor a receber: R$ ' + receber.toFixed(2);
 }
 
-function gerarContrato(){
- const vc = Number(valorContrato.value||0);
- const s  = Number(sinal.value||0);
- const receber = vc - s;
-
- valorReceber.innerText = `Valor a Receber: R$ ${receber.toFixed(2)}`;
-
- contratoConteudo.innerHTML = `
- <h1 style="text-align:center;color:#c64f86">CONTRATO DE LOCAÇÃO – PEGUE E MONTE</h1>
-
- <strong>LOCADORA:</strong><br>
- Molleiros Decor – Decoração Infantil<br><br>
-
- <strong>LOCATÁRIO:</strong><br>
- ${cNome.value}<br>
- CPF: ${cCpf.value}<br>
- Telefone: ${cTel.value}<br>
- Endereço: ${cEnd.value}<br><br>
-
- <div class="valorDestaque">VALOR DO CONTRATO: R$ ${vc.toFixed(2)}</div>
- <strong>SINAL:</strong> R$ ${s.toFixed(2)}<br>
- <strong>VALOR A RECEBER:</strong> R$ ${receber.toFixed(2)}<br><br>
-
- <strong>ITENS LOCADOS (avaria/extravio):</strong><br>
- ${itens.map(i=>`• ${i.nome} – R$ ${i.valor.toFixed(2)}`).join('<br>') || '—'}<br><br>
-
- <strong>OBSERVAÇÕES NA DEVOLUÇÃO:</strong><br>
- ${obsDev.value || '—'}
- `;
-}
-
-async function gerarPDF(){
- gerarContrato();
-
- await supabase.from('contratos').insert([{
-  valor_contrato:Number(valorContrato.value),
-  sinal:Number(sinal.value),
-  valor_receber:Number(valorContrato.value)-Number(sinal.value),
-  status:'ativo'
- }]);
-
- html2pdf().from(contratoPDF).save('Contrato_Molleiros_Decor.pdf');
+// 🖨️ IMPRIMIR
+function imprimir(){
+  window.print();
 }
 </script>
 
