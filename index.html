@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Molleiros Decor | Sistema Profissional</title>
 
-<!-- Supabase -->
+<!-- SUPABASE CDN (UMA ÚNICA VEZ) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -17,12 +17,12 @@ body{
 
 /* LOGIN */
 #loginBox{
-  max-width:400px;
-  margin:100px auto;
+  max-width:420px;
+  margin:120px auto;
   background:#fff;
   padding:30px;
-  border-radius:18px;
-  box-shadow:0 0 15px rgba(0,0,0,.1);
+  border-radius:20px;
+  box-shadow:0 0 18px rgba(0,0,0,.12);
 }
 #loginBox h2{color:#c64f86;text-align:center}
 label{display:block;margin-top:12px}
@@ -37,7 +37,7 @@ button{
   border:none;
   padding:12px;
   border-radius:12px;
-  margin-top:15px;
+  margin-top:18px;
   cursor:pointer;
   width:100%;
 }
@@ -46,7 +46,7 @@ button:hover{background:#f4b3cd}
 /* SISTEMA */
 header{
   background:#f8c8dc;
-  padding:15px;
+  padding:18px;
   text-align:center;
 }
 section{
@@ -54,14 +54,16 @@ section{
   max-width:1200px;
   margin:20px auto;
   padding:20px;
-  border-radius:18px;
+  border-radius:20px;
   box-shadow:0 0 12px rgba(0,0,0,.06);
 }
-h2{color:#c64f86}
+h2{color:#c64f86;margin-top:0}
+.flex{display:flex;gap:12px;flex-wrap:wrap}
+.flex>div{flex:1}
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:10px;
+  margin-top:12px;
 }
 th,td{
   border:1px solid #eee;
@@ -74,8 +76,6 @@ th{background:#fff1c1}
   font-weight:bold;
   margin-top:15px;
 }
-.flex{display:flex;gap:12px;flex-wrap:wrap}
-.flex>div{flex:1}
 </style>
 </head>
 
@@ -119,42 +119,63 @@ th{background:#fff1c1}
     <div><label>Qtd</label><input type="number" id="qtd"></div>
     <div><label>Valor (avaria/extravio)</label><input type="number" id="valor"></div>
   </div>
+
   <button onclick="addItem()">Adicionar Item</button>
 
   <table id="tItens">
-    <tr><th>✔</th><th>Item</th><th>Qtd</th><th>Valor</th></tr>
+    <tr>
+      <th>✔</th>
+      <th>Item</th>
+      <th>Qtd</th>
+      <th>Valor</th>
+    </tr>
   </table>
 </section>
 
 <section>
   <h2>💰 Valores</h2>
   <div class="flex">
-    <div><label>Valor do Contrato</label><input type="number" id="valorContrato" oninput="recalcular()"></div>
-    <div><label>Sinal Recebido</label><input type="number" id="sinal" oninput="recalcular()"></div>
+    <div>
+      <label>Valor do Contrato (R$)</label>
+      <input type="number" id="valorContrato" oninput="recalcular()">
+    </div>
+    <div>
+      <label>Sinal Recebido (R$)</label>
+      <input type="number" id="sinal" oninput="recalcular()">
+    </div>
   </div>
+
   <div class="total" id="total">Valor a receber: R$ 0,00</div>
 </section>
 
 <section>
-  <button onclick="imprimir()">🖨️ Imprimir Contrato</button>
+  <button onclick="window.print()">🖨️ Imprimir Contrato</button>
 </section>
 
 </div>
 
 <script>
-// 🔗 SUPABASE (SUAS CHAVES)
-const supabaseUrl = 'https://dpwtogyfwxoibtrrquax.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwd3RvZ3lmd3hvaWJ0cnJxdWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzMyOTUsImV4cCI6MjA4MzQwOTI5NX0.VkDX_uXY2qPFtnEqLFULjRUrN4dACJE86AcawIXZ-44';
+/* ===============================
+   SUPABASE — CONFIGURAÇÃO LIMPA
+   (NÃO EXISTE const supabase = )
+=============================== */
+const SUPABASE_URL = 'https://dpwtogyfwxoibtrrquax.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwd3RvZ3lmd3hvaWJ0cnJxdWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzMyOTUsImV4cCI6MjA4MzQwOTI5NX0.VkDX_uXY2qPFtnEqLFULjRUrN4dACJE86AcawIXZ-44';
 
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-// 🔐 LOGIN
+/* ===============================
+   LOGIN
+=============================== */
 async function login(){
-  const email = loginEmail.value;
-  const senha = loginSenha.value;
+  const email = document.getElementById('loginEmail').value;
+  const senha = document.getElementById('loginSenha').value;
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: email,
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email,
     password: senha
   });
 
@@ -163,50 +184,54 @@ async function login(){
     return;
   }
 
-  loginBox.style.display = 'none';
-  sistema.style.display = 'block';
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('sistema').style.display = 'block';
 }
 
-// 🔁 AUTO LOGIN
-supabase.auth.getSession().then(({ data })=>{
+/* AUTO LOGIN */
+supabaseClient.auth.getSession().then(({ data })=>{
   if(data.session){
-    loginBox.style.display='none';
-    sistema.style.display='block';
+    document.getElementById('loginBox').style.display='none';
+    document.getElementById('sistema').style.display='block';
   }
 });
 
-// 📦 ITENS
-let itens=[];
+/* ===============================
+   ITENS
+=============================== */
+let itens = [];
+
 function addItem(){
+  if(!item.value || !qtd.value) return;
+
   itens.push({
     item:item.value,
     qtd:qtd.value,
     valor:valor.value
   });
 
-  tItens.innerHTML += `
-   <tr>
-     <td><input type="checkbox"></td>
-     <td>${item.value}</td>
-     <td>${qtd.value}</td>
-     <td>R$ ${Number(valor.value).toFixed(2)}</td>
-   </tr>
+  document.getElementById('tItens').innerHTML += `
+    <tr>
+      <td><input type="checkbox"></td>
+      <td>${item.value}</td>
+      <td>${qtd.value}</td>
+      <td>R$ ${Number(valor.value||0).toFixed(2)}</td>
+    </tr>
   `;
 
-  item.value=qtd.value=valor.value='';
+  item.value='';
+  qtd.value='';
+  valor.value='';
 }
 
-// 💰 VALORES
+/* ===============================
+   VALORES
+=============================== */
 function recalcular(){
-  let v = Number(valorContrato.value)||0;
-  let s = Number(sinal.value)||0;
-  let receber = v - s;
+  const v = Number(valorContrato.value)||0;
+  const s = Number(sinal.value)||0;
+  const receber = v - s;
   total.innerText = 'Valor a receber: R$ ' + receber.toFixed(2);
-}
-
-// 🖨️ IMPRIMIR
-function imprimir(){
-  window.print();
 }
 </script>
 
