@@ -1,159 +1,75 @@
-<div id="sistema" style="display:none">
 <!DOCTYPE html>
 <html lang="pt-BR">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <head>
 <meta charset="UTF-8">
-<title>Molleiros Decor | Contrato Pegue e Monte</title>
+<title>Molleiros Decor | Sistema Online Profissional</title>
 
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-async function login(){
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: loginEmail.value,
-    password: loginSenha.value
-  });
-
-  if(error){
-    alert('Login inválido');
-    return;
-  }
-
-  loginBox.style.display = 'none';
-  sistema.style.display = 'block';
-}
-
-<script>
-const supabaseUrl = "https://dpwtogyfwxoibtrrquax.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwd3RvZ3lmd3hvaWJ0cnJxdWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzMyOTUsImV4cCI6MjA4MzQwOTI5NX0.VkDX_uXY2qPFtnEqLFULjRUrN4dACJE86AcawIXZ-44";
-
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-
-</script>
-
-async function salvarContratoOnline(dados){
-  const { data, error } = await supabase
-    .from('contratos')
-    .insert([dados]);
-
-  if(error){
-    alert('Erro ao salvar contrato');
-    console.error(error);
-  } else {
-    alert('Contrato salvo com sucesso!');
-  }
-}
-
-
 <style>
-body{
-  font-family:'Segoe UI',Arial;
-  background:#fdf6f9;
-  margin:0;
+:root{
+ --rosa:#f8c8dc;--rosa2:#f4b3cd;--amarelo:#fff1c1;--texto:#444;
 }
-
-header{
-  background:#f8c8dc;
-  padding:20px;
-  text-align:center;
-}
+body{font-family:'Segoe UI',Arial;background:#fff7fb;margin:0;color:var(--texto)}
+header{background:var(--rosa);padding:20px;text-align:center}
 header img{height:90px}
-
-section{
-  background:#fff;
-  max-width:1000px;
-  margin:25px auto;
-  padding:25px;
-  border-radius:14px;
-  box-shadow:0 0 12px rgba(0,0,0,.06);
-}
-
-h2{color:#c64f86}
-
+section{background:#fff;max-width:1100px;margin:20px auto;padding:25px;border-radius:16px;box-shadow:0 0 14px rgba(0,0,0,.06)}
+h2{color:#c64f86;margin-top:0}
 label{display:block;margin-top:10px}
-input{
-  width:100%;
-  padding:8px;
-  border-radius:8px;
-  border:1px solid #ddd;
-}
+input,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
+button{background:var(--rosa);border:none;padding:10px 18px;border-radius:10px;margin-top:15px;cursor:pointer}
+button:hover{background:var(--rosa2)}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{border:1px solid #eee;padding:8px;text-align:center}
+th{background:var(--amarelo)}
+.total{font-size:20px;font-weight:bold;color:#c64f86;margin-top:15px}
 
-button{
-  background:#f8c8dc;
-  border:none;
-  padding:10px 18px;
-  border-radius:8px;
-  margin-top:15px;
-  cursor:pointer;
+/* LOGIN */
+#loginBox{
+ max-width:400px;margin:80px auto;padding:30px;background:#fff;
+ border-radius:16px;box-shadow:0 0 12px rgba(0,0,0,.1)
 }
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:15px;
-}
-th,td{
-  border:1px solid #eee;
-  padding:8px;
-  text-align:center;
-}
-th{background:#fff1c1}
 
 /* CONTRATO */
 #contratoPDF{
-  margin-top:40px;
-  padding:50px;
-  min-height:1100px;
-  background:linear-gradient(135deg,#ffe6f0,#fff8dc,#e8f7ff);
-  position:relative;
+ margin-top:40px;padding:50px;min-height:1100px;
+ background:linear-gradient(135deg,#ffe6f0,#fff8dc,#e8f7ff);
+ position:relative
 }
-
 .watermark{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  opacity:0.08;
+ position:absolute;top:50%;left:50%;
+ transform:translate(-50%,-50%);
+ opacity:0.08
 }
 .watermark img{width:90%}
-
-.contratoConteudo{
-  position:relative;
-  z-index:1;
-  font-size:14px;
-  color:#444;
-}
-
-.valorDestaque{
-  font-size:20px;
-  font-weight:bold;
-  color:#c64f86;
-  margin:15px 0;
-}
+.contrato{position:relative;z-index:1;font-size:14px;line-height:1.6}
+.valorDestaque{font-size:22px;font-weight:bold;color:#c64f86;margin:15px 0}
 </style>
 </head>
 
 <body>
-<div id="loginBox" style="max-width:400px;margin:80px auto;padding:30px;background:#fff;border-radius:16px;box-shadow:0 0 12px rgba(0,0,0,.1)">
-  <h2 style="text-align:center;color:#c64f86">🔐 Login Molleiros Decor</h2>
 
-  <label>Email</label>
-  <input id="loginEmail" type="email" value="molleirosdecor@gmail.com">
-
-  <label>Senha</label>
-  <input id="loginSenha" type="password">
-
-  <button style="width:100%" onclick="login()">Entrar</button>
+<!-- LOGIN -->
+<div id="loginBox">
+<h2 style="text-align:center;color:#c64f86">🔐 Login Molleiros Decor</h2>
+<label>Email</label>
+<input id="loginEmail" value="molleirosdecor@gmail.com">
+<label>Senha</label>
+<input id="loginSenha" type="password">
+<button style="width:100%" onclick="login()">Entrar</button>
 </div>
 
-<header>
-  <img src="logo.png">
-</header>
+<!-- SISTEMA -->
+<div id="sistema" style="display:none">
+
+<header><img src="logo.png"></header>
 
 <section>
-<h2>Cliente</h2>
+<h2>👩‍👧 Cliente</h2>
 <label>Nome</label><input id="cNome">
 <label>CPF</label><input id="cCpf">
 <label>Telefone</label><input id="cTel">
@@ -161,107 +77,117 @@ th{background:#fff1c1}
 </section>
 
 <section>
-<h2>Valores da Locação</h2>
-<label>Valor do Contrato (R$)</label><input id="valorContrato" type="number">
-<label>Sinal Pago (R$)</label><input id="sinal" type="number">
-<div id="valorReceber" class="valorDestaque"></div>
+<h2>💰 Valores</h2>
+<label>Valor do Contrato</label><input id="valorContrato" type="number" oninput="atualizar()">
+<label>Sinal</label><input id="sinal" type="number" oninput="atualizar()">
+<div class="total" id="valorReceber">Valor a Receber: R$ 0,00</div>
 </section>
 
 <section>
-<h2>Itens do Kit (Valores para avaria/extravio)</h2>
+<h2>📦 Itens do Kit (avaria/extravio)</h2>
 <label>Item</label><input id="item">
-<label>Valor de Reposição (R$)</label><input id="valorItem" type="number">
-<button onclick="addItem()">Adicionar</button>
+<label>Valor de Reposição</label><input id="valorItem" type="number">
+<button onclick="addItem()">Adicionar Item</button>
 
-<table id="tabela">
-<tr><th>Item</th><th>Valor Reposição</th></tr>
-</table>
+<table id="tItens"><tr><th>Item</th><th>Valor</th></tr></table>
+
+<h3>✔ Checklist Retirada</h3>
+<div id="checkRet"></div>
+
+<h3>✔ Checklist Devolução</h3>
+<div id="checkDev"></div>
+
+<label>Observações na Devolução</label>
+<textarea id="obsDev"></textarea>
 </section>
 
 <section>
 <button onclick="gerarContrato()">Atualizar Contrato</button>
 <button onclick="gerarPDF()">Gerar PDF</button>
+<button onclick="window.print()">Imprimir</button>
 </section>
 
 <section id="contratoPDF">
-
-<div class="watermark">
-  <img src="logo.png">
-</div>
-
-<div class="contratoConteudo" id="contratoTexto">
-<h1 style="text-align:center;color:#c64f86">CONTRATO DE LOCAÇÃO – PEGUE E MONTE</h1>
-<p style="text-align:center;font-weight:bold">
-*** CONTRATO VISÍVEL NA TELA ***
-</p>
-</div>
-
+<div class="watermark"><img src="logo.png"></div>
+<div class="contrato" id="contratoConteudo"></div>
 </section>
 
+</div>
+
 <script>
-let itens = [];
+// SUPABASE CONFIG
+const supabaseUrl = 'https://dpwtogyfwxoibtrrquax.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwd3RvZ3lmd3hvaWJ0cnJxdWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzMyOTUsImV4cCI6MjA4MzQwOTI5NX0.VkDX_uXY2qPFtnEqLFULjRUrN4dACJE86AcawIXZ-44';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// LOGIN
+async function login(){
+ const { error } = await supabase.auth.signInWithPassword({
+  email: loginEmail.value,
+  password: loginSenha.value
+ });
+ if(error){alert('Login inválido');return;}
+ loginBox.style.display='none';
+ sistema.style.display='block';
+}
+
+// SISTEMA
+let itens=[];
 
 function addItem(){
-  let i = item.value;
-  let v = valorItem.value;
-  itens.push({i,v});
-  tabela.innerHTML += `<tr><td>${i}</td><td>R$ ${Number(v).toFixed(2)}</td></tr>`;
-  item.value=""; valorItem.value="";
+ let i=item.value;
+ let v=Number(valorItem.value||0);
+ if(!i||v<=0)return;
+ itens.push({i,v});
+ tItens.innerHTML+=`<tr><td>${i}</td><td>R$ ${v.toFixed(2)}</td></tr>`;
+ checkRet.innerHTML+=`<label><input type="checkbox"> ${i}</label><br>`;
+ checkDev.innerHTML+=`<label><input type="checkbox"> ${i}</label><br>`;
+ item.value='';valorItem.value='';
+ gerarContrato();
 }
+
+function atualizar(){gerarContrato();}
 
 function gerarContrato(){
-  let vc = Number(valorContrato.value||0);
-  let s = Number(sinal.value||0);
-  let receber = vc - s;
+ let vc=Number(valorContrato.value||0);
+ let s=Number(sinal.value||0);
+ let receber=vc-s;
+ valorReceber.innerText=`Valor a Receber: R$ ${receber.toFixed(2)}`;
 
-  valorReceber.innerText = `Valor a Receber: R$ ${receber.toFixed(2)}`;
+ contratoConteudo.innerHTML=`
+ <h1 style="text-align:center;color:#c64f86">CONTRATO DE LOCAÇÃO – PEGUE E MONTE</h1>
+ <strong>LOCADORA:</strong><br>
+ Molleiros Decor – Decoração Infantil<br><br>
 
-  let lista = itens.map(x=>`${x.i} – Valor reposição: R$ ${Number(x.v).toFixed(2)}`).join("<br>");
+ <strong>LOCATÁRIO:</strong><br>
+ ${cNome.value}<br>
+ CPF: ${cCpf.value}<br>
+ Telefone: ${cTel.value}<br>
+ Endereço: ${cEnd.value}<br><br>
 
-  contratoTexto.innerHTML = `
-  <h1 style="text-align:center;color:#c64f86">CONTRATO DE LOCAÇÃO – PEGUE E MONTE</h1>
+ <div class="valorDestaque">VALOR DO CONTRATO: R$ ${vc.toFixed(2)}</div>
+ <strong>SINAL:</strong> R$ ${s.toFixed(2)}<br>
+ <strong>VALOR A RECEBER:</strong> R$ ${receber.toFixed(2)}<br><br>
 
-  <strong>LOCADORA:</strong><br>
-  Molleiros Decor – Decoração Infantil<br><br>
+ <strong>ITENS LOCADOS:</strong><br>
+ ${itens.map(x=>`• ${x.i} – R$ ${x.v.toFixed(2)}`).join('<br>')||'—'}<br><br>
 
-  <strong>LOCATÁRIO:</strong><br>
-  ${cNome.value}<br>
-  CPF: ${cCpf.value}<br>
-  Telefone: ${cTel.value}<br>
-  Endereço: ${cEnd.value}<br><br>
-
-  <strong>VALOR DO CONTRATO:</strong>
-  <div class="valorDestaque">R$ ${vc.toFixed(2)}</div>
-
-  <strong>SINAL PAGO:</strong> R$ ${s.toFixed(2)}<br>
-  <strong>VALOR A RECEBER:</strong> R$ ${receber.toFixed(2)}<br><br>
-
-  <strong>ITENS LOCADOS (Valores para avaria/extravio):</strong><br>
-  ${lista}<br><br>
-
-  <strong>CLÁUSULAS:</strong><br>
-  O LOCATÁRIO se responsabiliza pela guarda, conservação e devolução dos itens
-  nas mesmas condições recebidas, ficando sujeito à cobrança integral dos valores
-  de reposição em caso de avaria ou extravio.<br><br>
-
-  Documento assinado eletronicamente.<br>
-  Foro: Carapicuíba – SP
-  `;
+ <strong>OBSERVAÇÕES NA DEVOLUÇÃO:</strong><br>
+ ${obsDev.value||'—'}
+ `;
 }
 
-function gerarPDF(){
-salvarContratoOnline({
-  valor_contrato: Number(valorContrato.value),
-  sinal: Number(sinal.value),
-  valor_receber: Number(valorContrato.value) - Number(sinal.value),
-  status: 'ativo'
-});
-
-  gerarContrato();
-  html2pdf().from(document.getElementById("contratoPDF")).save("Contrato_Molleiros_Decor.pdf");
+async function gerarPDF(){
+ gerarContrato();
+ await supabase.from('contratos').insert([{
+  valor_contrato:Number(valorContrato.value),
+  sinal:Number(sinal.value),
+  valor_receber:Number(valorContrato.value)-Number(sinal.value),
+  status:'ativo'
+ }]);
+ html2pdf().from(contratoPDF).save('Contrato_Molleiros_Decor.pdf');
 }
 </script>
 
 </body>
 </html>
-</div>
