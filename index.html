@@ -2,236 +2,189 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Molleiros Decor | Sistema Profissional</title>
+<title>Molleiros Decor | Sistema de Locação</title>
 
-<!-- SUPABASE CDN (UMA ÚNICA VEZ) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{
-  font-family:Segoe UI,Arial,sans-serif;
-  background:#fff7fb;
+  font-family:Segoe UI, Arial;
+  background:#fff7f9;
   margin:0;
-  color:#555;
-}
-
-/* LOGIN */
-#loginBox{
-  max-width:420px;
-  margin:120px auto;
-  background:#fff;
-  padding:30px;
-  border-radius:20px;
-  box-shadow:0 0 18px rgba(0,0,0,.12);
-}
-#loginBox h2{color:#c64f86;text-align:center}
-label{display:block;margin-top:12px}
-input{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-button{
-  background:#f8c8dc;
-  border:none;
-  padding:12px;
-  border-radius:12px;
-  margin-top:18px;
-  cursor:pointer;
-  width:100%;
-}
-button:hover{background:#f4b3cd}
-
-/* SISTEMA */
-header{
-  background:#f8c8dc;
-  padding:18px;
-  text-align:center;
 }
 section{
   background:#fff;
-  max-width:1200px;
+  max-width:1100px;
   margin:20px auto;
   padding:20px;
-  border-radius:20px;
-  box-shadow:0 0 12px rgba(0,0,0,.06);
+  border-radius:14px;
 }
-h2{color:#c64f86;margin-top:0}
-.flex{display:flex;gap:12px;flex-wrap:wrap}
-.flex>div{flex:1}
+h2{color:#c64f86}
+input{padding:8px;width:100%;margin-top:6px}
+button{
+  background:#f3a6c8;
+  border:none;
+  padding:10px 16px;
+  border-radius:8px;
+  margin-top:10px;
+  cursor:pointer;
+}
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:12px;
+  margin-top:10px;
 }
 th,td{
   border:1px solid #eee;
   padding:8px;
 }
-th{background:#fff1c1}
+th{background:#ffe3ec}
 .total{
-  font-size:22px;
-  color:#c64f86;
   font-weight:bold;
-  margin-top:15px;
+  font-size:18px;
+  margin-top:10px;
 }
+.hidden{display:none}
 </style>
 </head>
 
 <body>
 
 <!-- LOGIN -->
-<div id="loginBox">
-  <h2>🔐 Login Molleiros Decor</h2>
-
-  <label>Email</label>
-  <input id="loginEmail" type="email" value="molleirosdecor@gmail.com">
-
-  <label>Senha</label>
-  <input id="loginSenha" type="password">
-
-  <button onclick="login()">Entrar</button>
-</div>
+<section id="loginBox">
+<h2>Login – Molleiros Decor</h2>
+<input id="email" placeholder="Email">
+<input id="senha" type="password" placeholder="Senha">
+<button id="btnLogin">Entrar</button>
+</section>
 
 <!-- SISTEMA -->
-<div id="sistema" style="display:none">
+<div id="sistema" class="hidden">
 
-<header>
-  <h2>Molleiros Decor — Sistema de Locação</h2>
-</header>
-
+<!-- DADOS DA EMPRESA -->
 <section>
-  <h2>👩 Cliente</h2>
-  <div class="flex">
-    <div><label>Nome</label><input id="nome"></div>
-    <div><label>CPF</label><input id="cpf"></div>
-    <div><label>Telefone</label><input id="telefone"></div>
-  </div>
-  <label>Endereço</label>
-  <input id="endereco">
+<h2>Dados da Empresa</h2>
+<p><b>Molleiros Decor</b><br>
+Decoração Infantil – Pegue e Monte<br>
+Carapicuíba / SP</p>
 </section>
 
+<!-- CLIENTE -->
 <section>
-  <h2>📦 Itens Locados (Checklist)</h2>
-  <div class="flex">
-    <div><label>Item</label><input id="item"></div>
-    <div><label>Qtd</label><input type="number" id="qtd"></div>
-    <div><label>Valor (avaria/extravio)</label><input type="number" id="valor"></div>
-  </div>
-
-  <button onclick="addItem()">Adicionar Item</button>
-
-  <table id="tItens">
-    <tr>
-      <th>✔</th>
-      <th>Item</th>
-      <th>Qtd</th>
-      <th>Valor</th>
-    </tr>
-  </table>
+<h2>Cliente</h2>
+<input id="nome" placeholder="Nome">
+<input id="cpf" placeholder="CPF">
+<input id="telefone" placeholder="Telefone">
+<input id="endereco" placeholder="Endereço">
 </section>
 
+<!-- VALORES -->
 <section>
-  <h2>💰 Valores</h2>
-  <div class="flex">
-    <div>
-      <label>Valor do Contrato (R$)</label>
-      <input type="number" id="valorContrato" oninput="recalcular()">
-    </div>
-    <div>
-      <label>Sinal Recebido (R$)</label>
-      <input type="number" id="sinal" oninput="recalcular()">
-    </div>
-  </div>
-
-  <div class="total" id="total">Valor a receber: R$ 0,00</div>
+<h2>Valores da Locação</h2>
+<input id="valorContrato" type="number" placeholder="Valor do contrato">
+<input id="sinal" type="number" placeholder="Sinal pago">
+<div class="total" id="valorReceber">Valor a receber: R$ 0,00</div>
 </section>
 
+<!-- ITENS -->
 <section>
-  <button onclick="window.print()">🖨️ Imprimir Contrato</button>
+<h2>Itens Locados (valores para avaria/extravio)</h2>
+<input id="item" placeholder="Item">
+<input id="qtd" type="number" placeholder="Qtd">
+<input id="valor" type="number" placeholder="Valor do item">
+<button onclick="addItem()">Adicionar</button>
+
+<table id="tabelaItens">
+<tr><th>Item</th><th>Qtd</th><th>Valor</th><th>Checklist</th></tr>
+</table>
+</section>
+
+<!-- CONTRATO -->
+<section>
+<h2>Contrato</h2>
+<button onclick="gerarContrato()">Visualizar Contrato</button>
+<button onclick="window.print()">Imprimir</button>
+
+<pre id="contrato" style="white-space:pre-wrap;background:#fafafa;padding:15px;border-radius:10px"></pre>
 </section>
 
 </div>
 
 <script>
-/* ===============================
-   SUPABASE — CONFIGURAÇÃO LIMPA
-   (NÃO EXISTE const supabase = )
-=============================== */
-const SUPABASE_URL = 'https://dpwtogyfwxoibtrrquax.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwd3RvZ3lmd3hvaWJ0cnJxdWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzMyOTUsImV4cCI6MjA4MzQwOTI5NX0.VkDX_uXY2qPFtnEqLFULjRUrN4dACJE86AcawIXZ-44';
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+/* SUPABASE */
+const client = window.supabase.createClient(
+  'https://dpwtogyfwxoibtrrquax.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwd3RvZ3lmd3hvaWJ0cnJxdWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzMyOTUsImV4cCI6MjA4MzQwOTI5NX0.VkDX_uXY2qPFtnEqLFULjRUrN4dACJE86AcawIXZ-44'
 );
 
-/* ===============================
-   LOGIN
-=============================== */
-async function login(){
-  const email = document.getElementById('loginEmail').value;
-  const senha = document.getElementById('loginSenha').value;
-
-  const { error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password: senha
+/* LOGIN */
+btnLogin.addEventListener('click', async ()=>{
+  const { error } = await client.auth.signInWithPassword({
+    email: email.value,
+    password: senha.value
   });
-
-  if(error){
-    alert('Erro no login: ' + error.message);
-    return;
-  }
-
-  document.getElementById('loginBox').style.display = 'none';
-  document.getElementById('sistema').style.display = 'block';
-}
-
-/* AUTO LOGIN */
-supabaseClient.auth.getSession().then(({ data })=>{
-  if(data.session){
-    document.getElementById('loginBox').style.display='none';
-    document.getElementById('sistema').style.display='block';
-  }
+  if(error){alert(error.message);return;}
+  loginBox.classList.add('hidden');
+  sistema.classList.remove('hidden');
 });
 
-/* ===============================
-   ITENS
-=============================== */
-let itens = [];
+/* VALORES */
+valorContrato.oninput = calcular;
+sinal.oninput = calcular;
 
-function addItem(){
-  if(!item.value || !qtd.value) return;
-
-  itens.push({
-    item:item.value,
-    qtd:qtd.value,
-    valor:valor.value
-  });
-
-  document.getElementById('tItens').innerHTML += `
-    <tr>
-      <td><input type="checkbox"></td>
-      <td>${item.value}</td>
-      <td>${qtd.value}</td>
-      <td>R$ ${Number(valor.value||0).toFixed(2)}</td>
-    </tr>
-  `;
-
-  item.value='';
-  qtd.value='';
-  valor.value='';
+function calcular(){
+  const receber =
+    (Number(valorContrato.value)||0) -
+    (Number(sinal.value)||0);
+  valorReceber.innerText =
+    `Valor a receber: R$ ${receber.toFixed(2)}`;
 }
 
-/* ===============================
-   VALORES
-=============================== */
-function recalcular(){
-  const v = Number(valorContrato.value)||0;
-  const s = Number(sinal.value)||0;
-  const receber = v - s;
-  total.innerText = 'Valor a receber: R$ ' + receber.toFixed(2);
+/* ITENS */
+let itens=[];
+function addItem(){
+  itens.push(item.value);
+  tabelaItens.innerHTML += `
+  <tr>
+    <td>${item.value}</td>
+    <td>${qtd.value}</td>
+    <td>R$ ${Number(valor.value).toFixed(2)}</td>
+    <td><input type="checkbox"></td>
+  </tr>`;
+  item.value=qtd.value=valor.value="";
+}
+
+/* CONTRATO */
+function gerarContrato(){
+contrato.innerText = `
+CONTRATO DE LOCAÇÃO – PEGUE E MONTE
+
+LOCADORA:
+MOLLEIROS DECOR
+Decoração Infantil
+Carapicuíba / SP
+
+CLIENTE:
+${nome.value}
+CPF: ${cpf.value}
+Telefone: ${telefone.value}
+Endereço: ${endereco.value}
+
+VALOR DO CONTRATO:
+R$ ${Number(valorContrato.value).toFixed(2)}
+
+SINAL:
+R$ ${Number(sinal.value).toFixed(2)}
+
+ITENS LOCADOS:
+${itens.join(", ")}
+
+OBS:
+Os valores dos itens são apenas para casos de avaria ou extravio.
+
+ASSINATURAS:
+_____________________________________
+`;
 }
 </script>
 
